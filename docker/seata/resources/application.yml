@@ -17,14 +17,7 @@ console:
 
 seata:
   config:
-    type: nacos
-    nacos:
-      server-addr: nacos:8848
-      namespace: public
-      group: SEATA_GROUP
-      username: nacos
-      password: nacos
-      data-id: seataServer.properties
+    type: file
   registry:
     type: nacos
     nacos:
@@ -39,19 +32,19 @@ seata:
     mode: db
     db:
       datasource: druid
-      db-type: mysql
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      dbType: mysql
+      driverClassName: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://mysql:3306/seata?useUnicode=true&rewriteBatchedStatements=true
       user: root
       password: root123456
-      min-conn: 5
-      max-conn: 100
-      global-table: global_table
-      branch-table: branch_table
-      lock-table: lock_table
-      distributed-lock-table: distributed_lock
-      query-limit: 100
-      max-wait: 5000
+      minConn: 5
+      maxConn: 100
+      globalTable: global_table
+      branchTable: branch_table
+      lockTable: lock_table
+      distributedLockTable: distributed_lock
+      queryLimit: 100
+      maxWait: 5000
   security:
     secretKey: SeataSecretKey0c382ef121d778043159209298fd40bf3850a017
     tokenValidityInMilliseconds: 1800000

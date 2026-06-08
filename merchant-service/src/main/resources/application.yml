@@ -6,10 +6,15 @@ spring:
     name: merchant-service
   cloud:
     nacos:
+      config:
+        import-check:
+          enabled: false
       discovery:
         server-addr: 127.0.0.1:8848
-      config:
-        server-addr: 127.0.0.1:8848
+        namespace: public
+        group: SEATA_GROUP
+        username: nacos
+        password: nacos
   datasource:
     url: jdbc:mysql://localhost:3306/trading_merchant?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     username: root
@@ -38,23 +43,14 @@ seata:
   enable-auto-data-source-proxy: true
   data-source-proxy-mode: AT
   config:
-    type: nacos
-    nacos:
-      server-addr: 127.0.0.1:8848
-      namespace: public
-      group: SEATA_GROUP
-      username: nacos
-      password: nacos
-      data-id: seataServer.properties
+    type: file
   registry:
-    type: nacos
-    nacos:
-      application: seata-server
-      server-addr: 127.0.0.1:8848
-      namespace: public
-      group: SEATA_GROUP
-      username: nacos
-      password: nacos
+    type: file
+  service:
+    vgroup-mapping:
+      trading-tx-group: default
+    grouplist:
+      default: 127.0.0.1:8091
   client:
     rm:
       async-commit-buffer-limit: 10000
@@ -79,13 +75,6 @@ seata:
       log-serialization: jackson
       log-table: undo_log
       only-care-update-columns: true
-  service:
-    vgroup-mapping:
-      trading-tx-group: default
-    grouplist:
-      default: 127.0.0.1:8091
-    enable-degrade: false
-    disable-global-transaction: false
   transport:
     shutdown:
       wait: 3

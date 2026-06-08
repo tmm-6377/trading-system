@@ -34,7 +34,7 @@ class SettlementApplicationServiceTest {
 
     @Test
     void should_generate_settlement_record() {
-        ProductInventory inventory = ProductInventory.create("merchant001", "SKU-001", "MacBook", Money.of(new BigDecimal("20.00")), 10);
+        ProductInventory inventory = ProductInventory.create("merchant001", "SKU-002", "MacBook", Money.of(new BigDecimal("20.00")), 10);
         inventory.checkAndDeductStock(2);
         MerchantAccount account = MerchantAccount.create("merchant001");
         account.credit(Money.of(new BigDecimal("40.00")));
