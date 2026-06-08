@@ -69,7 +69,7 @@ seata:
       table-meta-check-enable: true
       report-success-enable: false
       saga-branch-register-enable: false
-      saga-json-parser: fastjson
+      saga-json-parser: jackson
       lock:
         retry-interval: 10
         retry-times: 30
