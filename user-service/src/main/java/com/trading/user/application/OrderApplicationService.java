@@ -18,6 +18,7 @@ import com.trading.user.domain.repository.AccountTransactionRepository;
 import com.trading.user.domain.repository.OrderRepository;
 import com.trading.user.domain.repository.UserAccountRepository;
 import com.trading.user.infrastructure.redis.RedisLockService;
+import io.seata.spring.annotation.GlobalTransactional;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,8 @@ public class OrderApplicationService {
     private final MerchantServiceApi merchantServiceApi;
     private final RedisLockService redisLockService;
 
-    @Transactional
+    @GlobalTransactional(name = "create-order-tx", rollbackFor = Exception.class, timeoutMills = 60000)
+    @Transactional(rollbackFor = Exception.class)
     public OrderDTO createOrder(CreateOrderCommand command) {
         return redisLockService.executeWithLock(
             "order:%s:%s".formatted(command.getUserId(), command.getSku()),

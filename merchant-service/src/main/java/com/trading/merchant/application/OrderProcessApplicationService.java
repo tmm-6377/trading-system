@@ -19,7 +19,7 @@ public class OrderProcessApplicationService {
     private final ProductInventoryRepository productInventoryRepository;
     private final MerchantAccountRepository merchantAccountRepository;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ConfirmOrderResponse processOrder(ConfirmOrderRequest request) {
         ProductInventory inventory = productInventoryRepository.findByMerchantIdAndSku(request.getMerchantId(), request.getSku())
             .orElseThrow(() -> new NotFoundException("商品不存在"));
