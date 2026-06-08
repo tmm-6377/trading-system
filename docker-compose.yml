@@ -11,6 +11,13 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - ./sql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      - trading-network
 
   redis:
     image: redis:7.2
@@ -20,6 +27,8 @@ services:
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     volumes:
       - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - trading-network
 
   nacos:
     image: nacos/nacos-server:v2.2.3
@@ -39,7 +48,39 @@ services:
     ports:
       - "8848:8848"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/8848'"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    networks:
+      - trading-network
+
+  # ==================== Seata Server ====================
+  seata-server:
+    image: seataio/seata-server:1.7.1
+    container_name: trading-seata
+    restart: always
+    hostname: seata-server
+    ports:
+      - "7091:7091"
+      - "8091:8091"
+    environment:
+      SEATA_IP: seata-server
+      SEATA_PORT: 8091
+      STORE_MODE: db
+    volumes:
+      - ./docker/seata/resources:/seata-server/resources
+    networks:
+      - trading-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      nacos:
+        condition: service_healthy
 
   adminer:
     image: adminer
@@ -47,4 +88,11 @@ services:
     ports:
       - "8888:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    networks:
+      - trading-network
+
+networks:
+  trading-network:
+    driver: bridge
